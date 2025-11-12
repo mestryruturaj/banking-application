@@ -1,9 +1,11 @@
 package io.enscryptingbytes.banking_application.service;
 
 import io.enscryptingbytes.banking_application.dto.UserDto;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class UserService {
     public UserDto createUser(UserDto user) {
         return null;
