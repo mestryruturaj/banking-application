@@ -1,14 +1,16 @@
 package io.enscryptingbytes.banking_application.controller;
 
 import io.enscryptingbytes.banking_application.dto.UserDto;
+import io.enscryptingbytes.banking_application.dto.response.GenericResponse;
 import io.enscryptingbytes.banking_application.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static io.enscryptingbytes.banking_application.message.ResponseMessage.*;
 
 @RequestMapping(value = "/user", produces = "application/json")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -17,27 +19,87 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto user) {
-        return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
+    public GenericResponse<UserDto> createUser(@RequestBody UserDto user) {
+        UserDto response = userService.createUser(user);
+        if (response == null) {
+            return GenericResponse.<UserDto>builder()
+                    .message(USER_CREATION_FAILED)
+                    .httpStatus(HttpStatus.OK)
+                    .build();
+        } else {
+            return GenericResponse.<UserDto>builder()
+                    .message(USER_CREATION_PASSED)
+                    .httpStatus(HttpStatus.CREATED)
+                    .response(response)
+                    .build();
+        }
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
-        return new ResponseEntity<>(userService.getUser(id), HttpStatus.OK);
+    public GenericResponse<UserDto> getUser(@PathVariable Long id) {
+        UserDto response = userService.getUser(id);
+        if (response == null) {
+            return GenericResponse.<UserDto>builder()
+                    .message(USER_DOES_NOT_EXIST)
+                    .httpStatus(HttpStatus.OK)
+                    .build();
+        } else {
+            return GenericResponse.<UserDto>builder()
+                    .message(USER_FOUND)
+                    .httpStatus(HttpStatus.OK)
+                    .response(response)
+                    .build();
+        }
     }
 
     @GetMapping(value = "")
-    public ResponseEntity<List<UserDto>> getUsers() {
-        return new ResponseEntity<>(userService.getUsers(), HttpStatus.OK);
+    public GenericResponse<List<UserDto>> getUsers() {
+        List<UserDto> response = userService.getUsers();
+        if (response == null) {
+            return GenericResponse.<List<UserDto>>builder()
+                    .message(FAILED)
+                    .httpStatus(HttpStatus.OK)
+                    .build();
+        } else {
+            return GenericResponse.<List<UserDto>>builder()
+                    .message(SUCCESS)
+                    .httpStatus(HttpStatus.OK)
+                    .response(response)
+                    .build();
+        }
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
-        return new ResponseEntity<>(userService.updateUser(id, userDto), HttpStatus.OK);
+    public GenericResponse<UserDto> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
+        UserDto response = userService.updateUser(id, userDto);
+        if (response == null) {
+            return GenericResponse.<UserDto>builder()
+                    .message(FAILED)
+                    .httpStatus(HttpStatus.OK)
+                    .build();
+        } else {
+            return GenericResponse.<UserDto>builder()
+                    .message(SUCCESS)
+                    .httpStatus(HttpStatus.OK)
+                    .response(response)
+                    .build();
+        }
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<UserDto> deleteUser(@PathVariable Long id) {
-        return new ResponseEntity<>(userService.deleteUser(id), HttpStatus.OK);
+    public GenericResponse<UserDto> deleteUser(@PathVariable Long id) {
+        UserDto response = userService.deleteUser(id);
+        if (response == null) {
+            return GenericResponse.<UserDto>builder()
+                    .message(FAILED)
+                    .httpStatus(HttpStatus.OK)
+                    .build();
+        } else {
+            return GenericResponse.<UserDto>builder()
+                    .message(SUCCESS)
+                    .httpStatus(HttpStatus.OK)
+                    .response(response)
+                    .build();
+        }
     }
 }
