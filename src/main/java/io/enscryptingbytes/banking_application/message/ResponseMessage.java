@@ -8,5 +8,7 @@ public class ResponseMessage {
     public static final String USER_DOES_NOT_EXIST = "User does not exist.";
     public static final String SUCCESS = "Success";
     public static final String FAILED = "Failed";
-    public static final String SOMETHING_WENT_WRONG = "Something went wrong.";
+    public static final String SOMETHING_WENT_WRONG = "An unexpected error occurred. Please try again later.";
+    public static final String VALIDATION_FAILED = "Input validation failed. See details in 'response' field.";
+
 }
