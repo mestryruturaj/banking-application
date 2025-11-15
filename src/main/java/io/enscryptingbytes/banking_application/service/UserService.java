@@ -19,11 +19,8 @@ import static io.enscryptingbytes.banking_application.message.ExceptionMessage.U
 public class UserService {
     private final UserRepository userRepository;
 
-    public UserDto createUser(UserDto user) {
-        User existingUser = null;
-        if (user.getMobileNumber() != null) {
-            existingUser = getUserByMobileNumber(user.getMobileNumber());
-        }
+    public UserDto createUser(UserDto user) throws BankUserException {
+        User existingUser = getUserByMobileNumber(user.getMobileNumber());
         if (existingUser != null) {
             throw new BankUserException(USER_ALREADY_EXISTS);
         }
@@ -80,10 +77,18 @@ public class UserService {
     }
 
     public UserDto deleteUser(Long id) {
-        return null;
+        User existingUser = userRepository.findById(id).orElse(null);
+        if (existingUser != null) {
+            userRepository.delete(existingUser);
+        }
+
+        return mapUserToUserDto(existingUser);
     }
 
     public static List<UserDto> mapUserToUserDto(List<User> users) {
+        if (users == null) {
+            return null;
+        }
         List<UserDto> userDtoList = new ArrayList<>();
         for (User user : users) {
             userDtoList.add(mapUserToUserDto(user));
@@ -92,6 +97,9 @@ public class UserService {
     }
 
     public static UserDto mapUserToUserDto(User user) {
+        if (user == null) {
+            return null;
+        }
         return UserDto.builder()
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
@@ -101,13 +109,16 @@ public class UserService {
                 .build();
     }
 
-    public static User mapUserDtoToUser(UserDto user) {
+    public static User mapUserDtoToUser(UserDto userDto) {
+        if (userDto == null) {
+            return null;
+        }
         return User.builder()
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .email(user.getEmail())
-                .mobileNumber(user.getMobileNumber())
-                .dob(user.getDob())
+                .firstName(userDto.getFirstName())
+                .lastName(userDto.getLastName())
+                .email(userDto.getEmail())
+                .mobileNumber(userDto.getMobileNumber())
+                .dob(userDto.getDob())
                 .build();
     }
 }
