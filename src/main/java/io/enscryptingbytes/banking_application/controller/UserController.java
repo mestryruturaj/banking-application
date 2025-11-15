@@ -2,8 +2,10 @@ package io.enscryptingbytes.banking_application.controller;
 
 import io.enscryptingbytes.banking_application.dto.UserDto;
 import io.enscryptingbytes.banking_application.dto.response.GenericResponse;
+import io.enscryptingbytes.banking_application.exception.BankUserException;
 import io.enscryptingbytes.banking_application.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -15,22 +17,25 @@ import static io.enscryptingbytes.banking_application.message.ResponseMessage.*;
 @RequestMapping(value = "/user", produces = "application/json")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @RestController
+@Slf4j
 public class UserController {
     private final UserService userService;
 
     @PostMapping(consumes = "application/json")
     public GenericResponse<UserDto> createUser(@RequestBody UserDto user) {
-        UserDto response = userService.createUser(user);
-        if (response == null) {
-            return GenericResponse.<UserDto>builder()
-                    .message(USER_CREATION_FAILED)
-                    .httpStatus(HttpStatus.OK)
-                    .build();
-        } else {
+        UserDto response = null;
+        try {
+            response = userService.createUser(user);
             return GenericResponse.<UserDto>builder()
                     .message(USER_CREATION_PASSED)
                     .httpStatus(HttpStatus.CREATED)
                     .response(response)
+                    .build();
+        } catch (BankUserException e) {
+            log.error(e.getMessage());
+            return GenericResponse.<UserDto>builder()
+                    .message(USER_WITH_MOBILE_NUMBER_EXIST)
+                    .httpStatus(HttpStatus.OK)
                     .build();
         }
     }
