@@ -44,6 +44,7 @@ public class UserController {
     public GenericResponse<UserDto> getUser(@PathVariable Long id) {
         UserDto response = userService.getUser(id);
         if (response == null) {
+            log.info("No user to show.");
             return GenericResponse.<UserDto>builder()
                     .message(USER_DOES_NOT_EXIST)
                     .httpStatus(HttpStatus.OK)
@@ -61,6 +62,7 @@ public class UserController {
     public GenericResponse<List<UserDto>> getUsers() {
         List<UserDto> response = userService.getUsers();
         if (response == null) {
+            log.info("No users to show.");
             return GenericResponse.<List<UserDto>>builder()
                     .message(FAILED)
                     .httpStatus(HttpStatus.OK)
@@ -74,10 +76,11 @@ public class UserController {
         }
     }
 
-    @PutMapping(value = "/{id}")
+    @PatchMapping(value = "/{id}")
     public GenericResponse<UserDto> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
         UserDto response = userService.updateUser(id, userDto);
         if (response == null) {
+            log.info("No user to update.");
             return GenericResponse.<UserDto>builder()
                     .message(FAILED)
                     .httpStatus(HttpStatus.OK)
@@ -95,6 +98,7 @@ public class UserController {
     public GenericResponse<UserDto> deleteUser(@PathVariable Long id) {
         UserDto response = userService.deleteUser(id);
         if (response == null) {
+            log.info("No user to delete.");
             return GenericResponse.<UserDto>builder()
                     .message(FAILED)
                     .httpStatus(HttpStatus.OK)
