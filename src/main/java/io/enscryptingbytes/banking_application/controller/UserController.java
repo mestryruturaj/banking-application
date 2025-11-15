@@ -4,10 +4,13 @@ import io.enscryptingbytes.banking_application.dto.UserDto;
 import io.enscryptingbytes.banking_application.dto.response.GenericResponse;
 import io.enscryptingbytes.banking_application.exception.BankUserException;
 import io.enscryptingbytes.banking_application.service.UserService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,11 +21,12 @@ import static io.enscryptingbytes.banking_application.message.ResponseMessage.*;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @RestController
 @Slf4j
+@Validated
 public class UserController {
     private final UserService userService;
 
     @PostMapping(consumes = "application/json")
-    public GenericResponse<UserDto> createUser(@RequestBody UserDto user) {
+    public GenericResponse<UserDto> createUser(@Valid @RequestBody UserDto user) {
         UserDto response = null;
         try {
             response = userService.createUser(user);
@@ -41,7 +45,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/{id}")
-    public GenericResponse<UserDto> getUser(@PathVariable Long id) {
+    public GenericResponse<UserDto> getUser(@Min(value = 1, message = "User ID must be a positive number") @PathVariable Long id) {
         UserDto response = userService.getUser(id);
         if (response == null) {
             log.info("No user to show.");
@@ -77,7 +81,7 @@ public class UserController {
     }
 
     @PatchMapping(value = "/{id}")
-    public GenericResponse<UserDto> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
+    public GenericResponse<UserDto> updateUser(@Min(value = 1, message = "User ID must be a positive number") @PathVariable Long id, @Valid @RequestBody UserDto userDto) {
         UserDto response = userService.updateUser(id, userDto);
         if (response == null) {
             log.info("No user to update.");
@@ -95,7 +99,7 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public GenericResponse<UserDto> deleteUser(@PathVariable Long id) {
+    public GenericResponse<UserDto> deleteUser(@Min(value = 1, message = "User ID must be a positive number") @PathVariable Long id) {
         UserDto response = userService.deleteUser(id);
         if (response == null) {
             log.info("No user to delete.");
