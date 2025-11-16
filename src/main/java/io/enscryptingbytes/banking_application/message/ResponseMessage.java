@@ -11,4 +11,11 @@ public class ResponseMessage {
     public static final String SOMETHING_WENT_WRONG = "An unexpected error occurred. Please try again later.";
     public static final String VALIDATION_FAILED = "Input validation failed. See details in 'response' field.";
 
+
+    public static final String BRANCH_CREATION_PASSED = "Branch creation completed.";
+    public static final String BRANCH_CREATION_FAILED = "Branch creation failed.";
+    public static final String BRANCH_FOUND = "Branch found.";
+    public static final String BRANCH_DOES_NOT_EXIST = "Branch does not exist.";
+    public static final String BRANCH_UPDATED = "Branch updated.";
+    public static final String BRANCH_DELETED = "Branch deleted.";
 }
