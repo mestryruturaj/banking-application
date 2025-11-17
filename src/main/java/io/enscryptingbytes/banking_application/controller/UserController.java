@@ -68,7 +68,7 @@ public class UserController {
     public GenericResponse<UserDto> updateUser(@Min(value = 1, message = "User ID must be a positive number") @PathVariable Long id, @Valid @RequestBody UserDto userDto) throws BankUserException {
         UserDto response = userService.updateUser(id, userDto);
         return GenericResponse.<UserDto>builder()
-                .message(SUCCESS)
+                .message(USER_UPDATED)
                 .httpStatus(HttpStatus.OK)
                 .response(response)
                 .build();
@@ -78,7 +78,7 @@ public class UserController {
     public GenericResponse<UserDto> deleteUser(@Min(value = 1, message = "User ID must be a positive number") @PathVariable Long id) throws BankUserException {
         UserDto response = userService.deleteUser(id);
         return GenericResponse.<UserDto>builder()
-                .message(SUCCESS)
+                .message(USER_DELETED)
                 .httpStatus(HttpStatus.OK)
                 .response(response)
                 .build();
