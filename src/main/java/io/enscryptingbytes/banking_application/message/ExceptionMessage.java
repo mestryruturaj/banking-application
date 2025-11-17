@@ -6,4 +6,5 @@ public class ExceptionMessage {
 
     public static final String BRANCH_ALREADY_EXISTS = "Branch already exist.";
     public static final String BRANCH_DOES_NOT_EXISTS = "Branch does not exist.";
+    public static final String INVALID_INPUT = "Invalid input.";
 }
