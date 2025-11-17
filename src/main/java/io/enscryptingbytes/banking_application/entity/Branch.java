@@ -2,17 +2,15 @@ package io.enscryptingbytes.banking_application.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Builder
-public class Branch {
+public class Branch extends AuditableEntity {
     @Id
     private String ifsc;
     private String name;
