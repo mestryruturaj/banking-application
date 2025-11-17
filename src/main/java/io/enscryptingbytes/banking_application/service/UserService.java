@@ -6,13 +6,14 @@ import io.enscryptingbytes.banking_application.exception.BankUserException;
 import io.enscryptingbytes.banking_application.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static io.enscryptingbytes.banking_application.message.ExceptionMessage.USER_ALREADY_EXISTS;
+import static io.enscryptingbytes.banking_application.message.ExceptionMessage.USER_DOES_NOT_EXISTS;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -30,19 +31,13 @@ public class UserService {
         return user;
     }
 
-    private User getUserByMobileNumber(String mobileNumber) {
-        Optional<User> userOptional = userRepository.findByMobileNumber(mobileNumber);
-        return userOptional.orElse(null);
+    private User getUserByMobileNumber(String mobileNumber) throws BankUserException {
+        return userRepository.findByMobileNumber(mobileNumber).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXISTS, HttpStatus.NOT_FOUND));
     }
 
-    public UserDto getUser(Long id) {
-        Optional<User> userOptional = userRepository.findById(id);
-        if (userOptional.isEmpty()) {
-            return null;
-        } else {
-            User user = userOptional.get();
-            return mapUserToUserDto(user);
-        }
+    public UserDto getUser(Long id) throws BankUserException {
+        User user = userRepository.findById(id).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXISTS, HttpStatus.NOT_FOUND));
+        return mapUserToUserDto(user);
     }
 
     public List<UserDto> getUsers() {
@@ -51,11 +46,9 @@ public class UserService {
 
     }
 
-    public UserDto updateUser(Long id, UserDto userDto) {
-        User existingUser = userRepository.findById(id).orElse(null);
-        if (existingUser == null) {
-            return null;
-        }
+    public UserDto updateUser(Long id, UserDto userDto) throws BankUserException {
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXISTS, HttpStatus.NOT_FOUND));
+
         if (userDto.getFirstName() != null) {
             existingUser.setFirstName(userDto.getFirstName());
         }
@@ -76,12 +69,9 @@ public class UserService {
         return mapUserToUserDto(savedUser);
     }
 
-    public UserDto deleteUser(Long id) {
-        User existingUser = userRepository.findById(id).orElse(null);
-        if (existingUser != null) {
-            userRepository.delete(existingUser);
-        }
-
+    public UserDto deleteUser(Long id) throws BankUserException {
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXISTS, HttpStatus.NOT_FOUND));
+        userRepository.delete(existingUser);
         return mapUserToUserDto(existingUser);
     }
 
