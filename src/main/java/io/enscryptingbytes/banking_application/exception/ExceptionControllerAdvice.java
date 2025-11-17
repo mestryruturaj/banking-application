@@ -62,6 +62,14 @@ public class ExceptionControllerAdvice {
                 .build();
     }
 
+    @ExceptionHandler(BankBranchException.class)
+    public GenericResponse<Object> handleBankBranchException(BankBranchException ex) {
+        return GenericResponse.<Object>builder()
+                .message(ex.getMessage())
+                .httpStatus(ex.getHttpStatus())
+                .build();
+    }
+
 
     @ExceptionHandler(Exception.class)
     public GenericResponse<Object> handleException(Exception e) {
