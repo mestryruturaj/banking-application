@@ -75,6 +75,15 @@ public class UserService {
         return mapUserToUserDto(existingUser);
     }
 
+    public User findUserById(Long id) throws BankUserException {
+        return userRepository.findById(id).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXISTS, HttpStatus.NOT_FOUND));
+    }
+
+    public User findUserByMobileNumber(String mobileNumber) throws BankUserException {
+        return userRepository.findByMobileNumber(mobileNumber).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXISTS, HttpStatus.NOT_FOUND));
+    }
+
+
     public static List<UserDto> mapUserToUserDto(List<User> users) {
         if (users == null) {
             return null;
