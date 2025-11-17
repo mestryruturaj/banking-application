@@ -4,15 +4,17 @@ import io.enscryptingbytes.banking_application.dto.UserDto;
 import io.enscryptingbytes.banking_application.entity.User;
 import io.enscryptingbytes.banking_application.exception.BankUserException;
 import io.enscryptingbytes.banking_application.repository.UserRepository;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.regex.Pattern;
 
-import static io.enscryptingbytes.banking_application.message.ExceptionMessage.USER_ALREADY_EXISTS;
+import static io.enscryptingbytes.banking_application.message.ExceptionMessage.*;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -30,19 +32,13 @@ public class UserService {
         return user;
     }
 
-    private User getUserByMobileNumber(String mobileNumber) {
-        Optional<User> userOptional = userRepository.findByMobileNumber(mobileNumber);
-        return userOptional.orElse(null);
+    private User getUserByMobileNumber(String mobileNumber) throws BankUserException {
+        return userRepository.findByMobileNumber(mobileNumber).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXISTS, HttpStatus.NOT_FOUND));
     }
 
-    public UserDto getUser(Long id) {
-        Optional<User> userOptional = userRepository.findById(id);
-        if (userOptional.isEmpty()) {
-            return null;
-        } else {
-            User user = userOptional.get();
-            return mapUserToUserDto(user);
-        }
+    public UserDto getUser(Long id) throws BankUserException {
+        User user = userRepository.findById(id).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXISTS, HttpStatus.NOT_FOUND));
+        return mapUserToUserDto(user);
     }
 
     public List<UserDto> getUsers() {
@@ -51,11 +47,9 @@ public class UserService {
 
     }
 
-    public UserDto updateUser(Long id, UserDto userDto) {
-        User existingUser = userRepository.findById(id).orElse(null);
-        if (existingUser == null) {
-            return null;
-        }
+    public UserDto updateUser(Long id, UserDto userDto) throws BankUserException {
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXISTS, HttpStatus.NOT_FOUND));
+
         if (userDto.getFirstName() != null) {
             existingUser.setFirstName(userDto.getFirstName());
         }
@@ -76,14 +70,26 @@ public class UserService {
         return mapUserToUserDto(savedUser);
     }
 
-    public UserDto deleteUser(Long id) {
-        User existingUser = userRepository.findById(id).orElse(null);
-        if (existingUser != null) {
-            userRepository.delete(existingUser);
-        }
-
+    public UserDto deleteUser(Long id) throws BankUserException {
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXISTS, HttpStatus.NOT_FOUND));
+        userRepository.delete(existingUser);
         return mapUserToUserDto(existingUser);
     }
+
+    public User findUserById(Long id) throws BankUserException {
+        if (id == null || id < 0) {
+            throw new BankUserException(INVALID_INPUT, HttpStatus.BAD_REQUEST);
+        }
+        return userRepository.findById(id).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXISTS, HttpStatus.NOT_FOUND));
+    }
+
+    public User findUserByMobileNumber(String mobileNumber) throws BankUserException {
+        if (StringUtils.isEmpty(mobileNumber) || !Pattern.matches("[1-9][0-9]{9}", mobileNumber)) {
+            throw new BankUserException(INVALID_INPUT, HttpStatus.BAD_REQUEST);
+        }
+        return userRepository.findByMobileNumber(mobileNumber).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXISTS, HttpStatus.NOT_FOUND));
+    }
+
 
     public static List<UserDto> mapUserToUserDto(List<User> users) {
         if (users == null) {
