@@ -2,10 +2,7 @@ package io.enscryptingbytes.banking_application.entity;
 
 import io.enscryptingbytes.banking_application.enums.AccountType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 
@@ -14,12 +11,13 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Builder
 @Data
-public class Account {
+@EqualsAndHashCode(callSuper = true)
+public class Account extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(unique = true)
-    private String accountId;
+    private String accountNumber;
     @ManyToOne(cascade = CascadeType.REMOVE,
             fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",
