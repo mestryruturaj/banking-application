@@ -12,9 +12,10 @@ import java.math.BigDecimal;
 @Builder
 @Data
 @EqualsAndHashCode(callSuper = true)
+@SequenceGenerator(name = "account_seq", sequenceName = "account_sequence", allocationSize = 1)
 public class Account extends AuditableEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_seq")
     private long id;
     @Column(unique = true)
     private String accountNumber;
@@ -30,4 +31,12 @@ public class Account extends AuditableEntity {
     private Branch homeBranch;
     private AccountType accountType;
     private BigDecimal balance;
+
+    @PrePersist
+    public void generateAccountNumber() {
+        if (this.accountNumber == null && this.id != 0 && this.homeBranch != null) {
+            String ifsc = this.homeBranch.getIfsc();
+            this.accountNumber = ifsc + String.format("%010d", this.id);
+        }
+    }
 }
