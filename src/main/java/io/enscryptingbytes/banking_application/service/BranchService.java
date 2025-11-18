@@ -4,12 +4,14 @@ import io.enscryptingbytes.banking_application.dto.BranchDto;
 import io.enscryptingbytes.banking_application.entity.Branch;
 import io.enscryptingbytes.banking_application.exception.BankBranchException;
 import io.enscryptingbytes.banking_application.repository.BranchRepository;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import static io.enscryptingbytes.banking_application.message.ExceptionMessage.BRANCH_ALREADY_EXISTS;
-import static io.enscryptingbytes.banking_application.message.ExceptionMessage.BRANCH_DOES_NOT_EXISTS;
+import java.util.regex.Pattern;
+
+import static io.enscryptingbytes.banking_application.message.ExceptionMessage.*;
 
 @Service
 @RequiredArgsConstructor
@@ -61,6 +63,13 @@ public class BranchService {
         Branch existingBranch = branchRepository.findById(ifsc).orElseThrow(() -> new BankBranchException(BRANCH_DOES_NOT_EXISTS, HttpStatus.NOT_FOUND));
         branchRepository.delete(existingBranch);
         return convertBranchToBranchDto(existingBranch);
+    }
+
+    public Branch findBranchByIfsc(String ifsc) throws BankBranchException {
+        if (StringUtils.isBlank(ifsc) || !Pattern.matches("[A-Z]{4}0[0-9A-Z]{6}", ifsc)) {
+            throw new BankBranchException(INVALID_INPUT, HttpStatus.BAD_REQUEST);
+        }
+        return branchRepository.findById(ifsc).orElseThrow(() -> new BankBranchException(BRANCH_DOES_NOT_EXISTS, HttpStatus.NOT_FOUND));
     }
 
     public static BranchDto convertBranchToBranchDto(Branch branch) {
