@@ -20,4 +20,11 @@ public class ResponseMessage {
     public static final String BRANCH_DOES_NOT_EXIST = "Branch does not exist.";
     public static final String BRANCH_UPDATED = "Branch updated.";
     public static final String BRANCH_DELETED = "Branch deleted.";
+
+    public static final String ACCOUNT_CREATION_PASSED = "Account creation completed.";
+    public static final String ACCOUNT_CREATION_FAILED = "Account creation failed.";
+    public static final String ACCOUNT_FOUND = "Account found.";
+    public static final String ACCOUNT_DOES_NOT_EXIST = "Account does not exist.";
+    public static final String ACCOUNT_UPDATED = "Account updated.";
+    public static final String ACCOUNT_DELETED = "Account deleted.";
 }
