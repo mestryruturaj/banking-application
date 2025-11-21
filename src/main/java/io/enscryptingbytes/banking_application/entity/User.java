@@ -1,9 +1,6 @@
 package io.enscryptingbytes.banking_application.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -21,4 +18,6 @@ public class User extends AuditableEntity {
     private String email;
     private String mobileNumber;
     private String dob;
+    @Column(nullable = false)
+    private String password;
 }
