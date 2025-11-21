@@ -6,6 +6,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +18,11 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
-    @Value(value = "${security.jwt.secret-key}")
+    @Value("${security.jwt.secret-key:3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b}")
     private String SECRET_KEY;
-    @Value(value = "${security.jwt.expiration-time}")
+    @Value("${security.jwt.expiration-time:1800000}")
     private long EXPIRATION_TIME;
-    @Value(value = "${:BANK_APPLICATION}")
+    @Value("${security.jwt.issuer:BANK_APPLICATION}")
     private String ISSUER;
 
     //generate token
