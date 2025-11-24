@@ -27,4 +27,8 @@ public class ResponseMessage {
     public static final String ACCOUNT_DOES_NOT_EXIST = "Account does not exist.";
     public static final String ACCOUNT_UPDATED = "Account updated.";
     public static final String ACCOUNT_DELETED = "Account deleted.";
+
+    public static final String USER_SIGNED_UP = "User successfully signed up.";
+    public static final String USER_LOGGED_IN = "User successfully logged in.";
+    public static final String RESET_PASSWORD_TOKEN_SENT = "Reset password token sent to the email.";
 }
