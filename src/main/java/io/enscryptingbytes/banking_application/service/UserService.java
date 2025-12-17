@@ -33,11 +33,11 @@ public class UserService {
     }
 
     private User getUserByMobileNumber(String mobileNumber) throws BankUserException {
-        return userRepository.findByMobileNumber(mobileNumber).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXISTS, HttpStatus.NOT_FOUND));
+        return userRepository.findByMobileNumber(mobileNumber).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
     }
 
     public UserDto getUser(Long id) throws BankUserException {
-        User user = userRepository.findById(id).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXISTS, HttpStatus.NOT_FOUND));
+        User user = userRepository.findById(id).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
         return mapUserToUserDto(user);
     }
 
@@ -48,7 +48,7 @@ public class UserService {
     }
 
     public UserDto updateUser(Long id, UserDto userDto) throws BankUserException {
-        User existingUser = userRepository.findById(id).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXISTS, HttpStatus.NOT_FOUND));
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
 
         if (userDto.getFirstName() != null) {
             existingUser.setFirstName(userDto.getFirstName());
@@ -71,7 +71,7 @@ public class UserService {
     }
 
     public UserDto deleteUser(Long id) throws BankUserException {
-        User existingUser = userRepository.findById(id).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXISTS, HttpStatus.NOT_FOUND));
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
         userRepository.delete(existingUser);
         return mapUserToUserDto(existingUser);
     }
@@ -80,14 +80,21 @@ public class UserService {
         if (id == null || id < 0) {
             throw new BankUserException(INVALID_INPUT, HttpStatus.BAD_REQUEST);
         }
-        return userRepository.findById(id).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXISTS, HttpStatus.NOT_FOUND));
+        return userRepository.findById(id).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
     }
 
     public User findUserByMobileNumber(String mobileNumber) throws BankUserException {
         if (StringUtils.isEmpty(mobileNumber) || !Pattern.matches("[1-9][0-9]{9}", mobileNumber)) {
             throw new BankUserException(INVALID_INPUT, HttpStatus.BAD_REQUEST);
         }
-        return userRepository.findByMobileNumber(mobileNumber).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXISTS, HttpStatus.NOT_FOUND));
+        return userRepository.findByMobileNumber(mobileNumber).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
+    }
+
+    public User findUserByEmail(String email) throws BankUserException {
+        if (StringUtils.isEmpty(email) || !Pattern.matches("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^A-Za-z0-9]).{8,}$", email)) {
+            throw new BankUserException(INVALID_INPUT, HttpStatus.BAD_REQUEST);
+        }
+        return userRepository.findByEmail(email).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
     }
 
 
