@@ -1,6 +1,6 @@
 package io.enscryptingbytes.banking_application.config;
 
-import io.enscryptingbytes.banking_application.security.JwtAuthenticationFilter;
+import io.enscryptingbytes.banking_application.security.service.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
