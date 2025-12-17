@@ -1,4 +1,4 @@
-package io.enscryptingbytes.banking_application.security;
+package io.enscryptingbytes.banking_application.security.service;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
