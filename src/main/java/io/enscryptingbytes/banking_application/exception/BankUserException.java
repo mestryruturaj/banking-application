@@ -1,7 +1,9 @@
 package io.enscryptingbytes.banking_application.exception;
 
+import lombok.Data;
 import org.springframework.http.HttpStatus;
 
+@Data
 public class BankUserException extends Exception {
     private final HttpStatus httpStatus;
 

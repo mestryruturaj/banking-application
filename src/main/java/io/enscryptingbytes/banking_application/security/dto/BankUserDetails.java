@@ -1,4 +1,4 @@
-package io.enscryptingbytes.banking_application.security;
+package io.enscryptingbytes.banking_application.security.dto;
 
 import io.enscryptingbytes.banking_application.entity.User;
 import lombok.AllArgsConstructor;
