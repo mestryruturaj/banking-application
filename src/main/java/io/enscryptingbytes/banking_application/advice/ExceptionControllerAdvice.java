@@ -1,7 +1,9 @@
-package io.enscryptingbytes.banking_application.exception;
+package io.enscryptingbytes.banking_application.advice;
 
 
 import io.enscryptingbytes.banking_application.dto.response.GenericResponse;
+import io.enscryptingbytes.banking_application.exception.BankBranchException;
+import io.enscryptingbytes.banking_application.exception.BankUserException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;

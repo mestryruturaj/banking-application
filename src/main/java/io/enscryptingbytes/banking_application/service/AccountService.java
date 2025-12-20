@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 import static io.enscryptingbytes.banking_application.message.ExceptionMessage.*;
 
 @Service
@@ -27,7 +29,12 @@ public class AccountService {
     @Transactional
     public AccountDto createAccount(AccountDto accountDto) throws BankAccountException {
         try {
-            User user = userService.findUserById(accountDto.getUserId());
+            Optional<User> existingUserOptional = userService.findUserById(accountDto.getUserId());
+            if (existingUserOptional.isEmpty()) {
+                throw new BankAccountException(USER_DOES_NOT_EXIST, HttpStatus.BAD_REQUEST);
+            }
+
+            User user = existingUserOptional.get();
             Branch branch = branchService.findBranchByIfsc(accountDto.getIfsc());
             Account newAccount = Account.builder()
                     .accountType(accountDto.getAccountType())

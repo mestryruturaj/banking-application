@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import static io.enscryptingbytes.banking_application.message.ExceptionMessage.*;
@@ -22,9 +23,9 @@ public class UserService {
     private final UserRepository userRepository;
 
     public UserDto createUser(UserDto user) throws BankUserException {
-        User existingUser = getUserByMobileNumber(user.getMobileNumber());
-        if (existingUser != null) {
-            throw new BankUserException(USER_ALREADY_EXISTS);
+        Optional<User> existingUserOptional = getUserByMobileNumber(user.getMobileNumber());
+        if (existingUserOptional.isPresent()) {
+            throw new BankUserException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
         }
 
         User newUser = mapUserDtoToUser(user);
@@ -32,8 +33,8 @@ public class UserService {
         return user;
     }
 
-    private User getUserByMobileNumber(String mobileNumber) throws BankUserException {
-        return userRepository.findByMobileNumber(mobileNumber).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
+    private Optional<User> getUserByMobileNumber(String mobileNumber) throws BankUserException {
+        return userRepository.findByMobileNumber(mobileNumber);
     }
 
     public UserDto getUser(Long id) throws BankUserException {
@@ -76,25 +77,25 @@ public class UserService {
         return mapUserToUserDto(existingUser);
     }
 
-    public User findUserById(Long id) throws BankUserException {
+    public Optional<User> findUserById(Long id) throws BankUserException {
         if (id == null || id < 0) {
             throw new BankUserException(INVALID_INPUT, HttpStatus.BAD_REQUEST);
         }
-        return userRepository.findById(id).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
+        return userRepository.findById(id);
     }
 
-    public User findUserByMobileNumber(String mobileNumber) throws BankUserException {
+    public Optional<User> findUserByMobileNumber(String mobileNumber) throws BankUserException {
         if (StringUtils.isEmpty(mobileNumber) || !Pattern.matches("[1-9][0-9]{9}", mobileNumber)) {
             throw new BankUserException(INVALID_INPUT, HttpStatus.BAD_REQUEST);
         }
-        return userRepository.findByMobileNumber(mobileNumber).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
+        return userRepository.findByMobileNumber(mobileNumber);
     }
 
-    public User findUserByEmail(String email) throws BankUserException {
-        if (StringUtils.isEmpty(email) || !Pattern.matches("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^A-Za-z0-9]).{8,}$", email)) {
+    public Optional<User> findUserByEmail(String email) throws BankUserException {
+        if (StringUtils.isEmpty(email) || !Pattern.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$", email)) {
             throw new BankUserException(INVALID_INPUT, HttpStatus.BAD_REQUEST);
         }
-        return userRepository.findByEmail(email).orElseThrow(() -> new BankUserException(USER_DOES_NOT_EXIST, HttpStatus.NOT_FOUND));
+        return userRepository.findByEmail(email);
     }
 
 
@@ -130,6 +131,7 @@ public class UserService {
                 .firstName(userDto.getFirstName())
                 .lastName(userDto.getLastName())
                 .email(userDto.getEmail())
+                .password(userDto.getPassword())
                 .mobileNumber(userDto.getMobileNumber())
                 .dob(userDto.getDob())
                 .build();

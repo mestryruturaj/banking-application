@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 import static io.enscryptingbytes.banking_application.security.message.ExceptionMessage.*;
 import static io.enscryptingbytes.banking_application.security.message.ResponseMessage.*;
 
@@ -30,13 +32,13 @@ public class AuthService {
 
     public AuthResponse signUp(SignupRequest signupRequest) throws BankAuthException {
         try {
-            User existingUser = userService.findUserByEmail(signupRequest.getEmail());
-            if (existingUser != null) {
+            Optional<User> existingUserOptional = userService.findUserByEmail(signupRequest.getEmail());
+            if (existingUserOptional.isPresent()) {
                 throw new BankAuthException(USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
             }
-        } catch (BankUserException ex) {
-            log.error(ex.toString());
-            throw new BankAuthException(ex.getMessage(), ex.getHttpStatus());
+        } catch (BankUserException e) {
+            log.error(e.toString());
+            throw new BankAuthException(e.getMessage(), e.getHttpStatus());
         }
 
         UserDto userDto = convertSignupRequestToUserDto(signupRequest, passwordEncoder);
@@ -99,7 +101,11 @@ public class AuthService {
         //TODO: reset if validation successful
         if (StringUtils.equals(ChangePasswordType.PASSWORD.name(), changePasswordRequest.getChangePasswordType().name())) {
             try {
-                User user = userService.findUserByEmail(changePasswordRequest.getEmail());
+                Optional<User> existingUserOptional = userService.findUserByEmail(changePasswordRequest.getEmail());
+                if (existingUserOptional.isEmpty()) {
+                    throw new BankAuthException(USER_DOES_NOT_EXIST, HttpStatus.BAD_REQUEST);
+                }
+                User user = existingUserOptional.get();
                 user.setPassword(changePasswordRequest.getNewPassword());
                 String token = jwtService.generateToken(userDetailsService.loadUserByUsername(user.getEmail()));
                 return new AuthResponse(changePasswordRequest.getEmail(), "Token created", token);
@@ -117,11 +123,11 @@ public class AuthService {
 
     private User findExistingUserOrThrowBankAuthException(String email) throws BankAuthException {
         try {
-            User existingUser = userService.findUserByEmail(email);
-            if (existingUser == null) {
+            Optional<User> existingUserOptional = userService.findUserByEmail(email);
+            if (existingUserOptional.isEmpty()) {
                 throw new BankAuthException(USER_DOES_NOT_EXIST, HttpStatus.BAD_REQUEST);
             }
-            return existingUser;
+            return existingUserOptional.get();
         } catch (BankUserException e) {
             log.error(e.toString());
             throw new BankAuthException(e.getMessage(), e.getHttpStatus());
